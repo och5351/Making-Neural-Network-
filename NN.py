@@ -23,26 +23,20 @@ calc = Calculator()
 Y_train = util.to_Catgorical(Y_train,10)
 Y_test = util.to_Catgorical(Y_test, 10)
 
-epoch = 2001
+epoch = 2
+learning_rate = 0.01
 
 #데이터 입력
-neural.data_holder(X_train, Y_train)
+neural.data_holder(X_train, Y_train, epoch, learning_rate)
+
+#입력층
+print(neural.input_Layer)
 
 #입력층 + 은닉층
-neural.layer(20,28*28,"Sigmoid")
-print("[입력층 -> 은닉층 1]")
-print(neural.layer_predict[neural.get_Count()])
-
-print("\n")
+neural.layer(20, 28*28, "Sigmoid")
 
 #은닉층 + 출력층
-print("[은닉층 -> 출력층]")
-neural.layer(10,len(neural.layer_predict[neural.get_Count()-1]),"Sigmoid")
-print(neural.layer_predict[neural.get_Count()])
+neural.layer(10, len(neural.layer_predict[neural.get_Count()-1]),"Sigmoid")
 
-loss = calc.crossEntropy(neural.layer_predict[1],Y_train[0])
-print("\n")
-print("[손실]")
-print(loss)
-
-neural.back_Propagation()
+#오차역전파 및 반복
+neural.nn_compile("CrossEntropy")
