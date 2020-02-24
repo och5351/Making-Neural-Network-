@@ -1,7 +1,7 @@
 import numpy as np
-from ChanHaeFlow.MyUtil import MyUtil
-from ChanHaeFlow.Calculator import Calculator
-from ChanHaeFlow.Neural import Neural
+from DNN.MyUtil import MyUtil
+from DNN.Calculator import Calculator
+from DNN.Neural import Neural
 from tensorflow.keras.datasets import mnist
 
 #난수 고정 재연
@@ -9,7 +9,6 @@ np.random.seed(100)
 
 #데이터 셋 불러오기(학습 데이터 : 60,000 // 검증 데이터 : 10,000)
 (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
-
 
 
 #학습 및 검증 데이터 Flatten
@@ -23,23 +22,20 @@ neural = Neural()
 calc = Calculator()
 
 #원 핫 인코딩
-Y_train = util.to_Catgorical(Y_train,10)
+Y_train = util.to_Catgorical(Y_train, 10)
 Y_test = util.to_Catgorical(Y_test, 10)
 
-epoch = 2
+epoch = 2001
+batch = 10
 learning_rate = 0.001
 
-#데이터 입력
-neural.data_holder(X_train, Y_train, X_test, Y_test ,epoch, learning_rate)
+#데이터 입력(입력층 자동 생성)
+neural.data_holder(X_train, Y_train, X_test, Y_test, epoch, batch, learning_rate)
 
-#입력층
-print(neural.input_Layer)
-
-#입력층 + 은닉층
+#은닉층1
 neural.layer(20, 28*28, "Sigmoid")
 
-#은닉층 + 출력층
-neural.layer(10, len(neural.layer_predict[neural.get_Count()-1]),"Sigmoid")
+#출력층
+neural.layer(10, neural.getPreLayerOutPut(), "Sigmoid")
 
-#오차역전파 및 반복
-neural.nn_compile("CrossEntropy")
+neural.runNN("crossentropy")

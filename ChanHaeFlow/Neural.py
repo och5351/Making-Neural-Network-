@@ -11,6 +11,9 @@ class Neural:
     #데이터 받아오기
     __X_data = []
     __Y_Class = []
+    #테스트 데이터 받아오기
+    __X_test = []
+    __Y_test = []
     #입력층
     input_Layer = []
     # 이전 층 예측 값들
@@ -30,9 +33,11 @@ class Neural:
         return self.__Y_Class
 
     #데이터 담아두기
-    def data_holder(self, inputData, inputY_Class, epoch, eta):
+    def data_holder(self, inputData, inputY_Class,Xtest, Ytest, epoch, eta):
         self.__X_data = inputData
         self.__Y_Class = inputY_Class
+        self.__X_test = Xtest
+        self.__Y_test = Ytest
         self.__epoch = epoch
         self.__eta = eta
         self.input_Layer = (self.__X_data[0]) #첫 입력층
@@ -76,15 +81,14 @@ class Neural:
                     tempW = self.initWeight(inputDataCount)
 
                 if self.__count == 0:
-                    tempX = self.unit(self.__X_data[self.get_Count()], tempW[i], self.b[self.__count][i])
+                    tempX = self.unit(self.input_Layer, tempW[i], self.b[self.__count][i])
                 else:
                     tempX = self.unit(self.layer_predict[self.__count-1], tempW[i], self.b[self.__count][i])
 
                 temp_predict = np.append(temp_predict,self.node(tempX, activation))
             else:
                 if self.__count == 0:
-                    tempX = self.unit(self.__X_data[self.get_Count()], self.w[self.__count][i], self.b[self.__count][i])
-
+                    tempX = self.unit(self.input_Layer, self.w[self.__count][i], self.b[self.__count][i])
                 else:
                     tempX = self.unit(self.layer_predict[self.__count - 1], self.w[self.__count][i], self.b[self.__count][i])
                 self.layer_predict[self.__count][i] = self.node(tempX, activation)
@@ -98,30 +102,36 @@ class Neural:
         self.__count = self.__count + 1
 
     def back_Propagation(self, resultCount = 0):
-        self.__nowWhere += 1
-        pre_Layer_Predict_Count = 0
 
+        pre_Layer_Predict_Count = 0
+        bias = 0
+        bdelta = np.zeros(20)
         delta = [0.0, 0.0]
         for layerCount in reversed(range(self.__count)):
             for nodeCount in range(len(self.w[layerCount])):
                 for weightCount in range(len(self.w[layerCount][nodeCount])):
                     if layerCount != 0:
 
-                        if pre_Layer_Predict_Count == len(self.layer_predict[layerCount - 1]):
-                            pre_Layer_Predict_Count = 0
-
                         if layerCount == (self.__count-1): #출력층 가중치 업데이트
 
-                            #출력층 경사하강  @@@(전체 for문의 인수로 __Y_Class[0]의 하드코딩 바꿔주기!!)@@@
-                            result = calc.sigmoid_OutLayer_Gradient_Descent(calc, self.layer_predict[layerCount][nodeCount], self.__Y_Class[resultCount][nodeCount],
-                                                                           self.layer_predict[layerCount-1][pre_Layer_Predict_Count])
+                            #출력층 경사하강
+                            result = calc.sigmoid_OutLayer_Gradient_Descent(calc, self.layer_predict[layerCount][nodeCount], self.__Y_Class[self.__nowWhere][nodeCount],
+                                                                           self.layer_predict[layerCount-1][pre_Layer_Predict_Count], self.w[layerCount][nodeCount][weightCount])
                             #은닉층 -> 출력층 가중치 업데이트
-                            self.w[layerCount][nodeCount][weightCount] = self.w[layerCount][nodeCount][weightCount] - (self.__eta*result[0])
+                            self.w[layerCount][nodeCount][weightCount] = self.w[layerCount][nodeCount][weightCount] - (self.__eta * result[0])
+                            bias += result[2]
+                            bdelta[weightCount] += bdelta[weightCount] + result[3]
+                            if(weightCount + 1 == len(self.w[layerCount][nodeCount])):
+                                self.b[layerCount][nodeCount] = self.b[layerCount][nodeCount] - (self.__eta * bias)
+                                bias = 0
+                                delta[0] += result[1]  # 델타 값 미리 더해 놓기
 
-                            delta[0] += result[1]    #델타 값 미리 더해 놓기
+                            if pre_Layer_Predict_Count + 1 == len(self.layer_predict[layerCount - 1]):
+                                pre_Layer_Predict_Count = 0
+
                         else:
                             result = calc.sigmoid_HiddenLayer_Gradient_Descent(calc, self.layer_predict[layerCount][nodeCount], delta[0],
-                                                                              self.layer_predict[layerCount-1][pre_Layer_Predict_Count])
+                                                                              self.layer_predict[layerCount-1][pre_Layer_Predict_Count], bdelta[nodeCount])
 
                             self.w[layerCount][nodeCount][weightCount] = self.w[layerCount][nodeCount][weightCount] - (self.__eta * result[0])
                             delta[1] += result[1]  #델타 값 미리 더해 놓기
@@ -131,15 +141,20 @@ class Neural:
 
                     else:
 
-                        if pre_Layer_Predict_Count == len(self.input_Layer):
-                            pre_Layer_Predict_Count = 0
                         result = calc.sigmoid_HiddenLayer_Gradient_Descent(calc, self.layer_predict[layerCount][nodeCount],  delta[0],
-                                                                          self.input_Layer[pre_Layer_Predict_Count])
-
+                                                                          self.input_Layer[pre_Layer_Predict_Count], bdelta[nodeCount])
+                        bias += result[2]
                         self.w[layerCount][nodeCount][weightCount] = self.w[layerCount][nodeCount][weightCount] - (self.__eta * result[0])
+                        if (weightCount + 1 == len(self.w[layerCount][nodeCount])):
+                            self.b[layerCount][nodeCount] = self.b[layerCount][nodeCount] - (self.__eta * bias)
+                            bias = 0
+
+                        if pre_Layer_Predict_Count + 1 == len(self.input_Layer):
+                            pre_Layer_Predict_Count = 0
 
                     pre_Layer_Predict_Count += 1
         self.__count = 0
+        self.__nowWhere += 1
 
 
 
@@ -156,7 +171,7 @@ class Neural:
         print(loss)
         print("=" * 50)
         self.back_Propagation()
-        for learning in range(len(self.__X_data)-1):
+        for learning in range(10000):
             realNum = learning + 1
             self.input_Layer = self.__X_data[realNum]
             self.layer(len(self.layer_predict[0]), len(self.input_Layer), "Sigmoid")
@@ -167,6 +182,18 @@ class Neural:
                 print("[손실]")
                 print(loss)
                 print("=" * 50)
-                if loss < 1:
-                    break
+                #if loss < 1:
+                 #   break
 
+        for learning in range(5):
+            self.__X_data = self.__X_test
+            self.input_Layer = self.__X_test[learning]
+            self.__Y_Class = self.__Y_test
+            self.layer(len(self.layer_predict[0]), len(self.input_Layer), "Sigmoid")
+            self.layer(len(self.layer_predict[1]), len(self.layer_predict[0]), "Sigmoid")
+            print("[출력층 값]")
+            print(self.layer_predict[1])
+            print("[정답]")
+            print(self.__Y_Class[learning])
+            self.__nowWhere = 0
+            self.back_Propagation()

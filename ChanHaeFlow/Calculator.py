@@ -28,11 +28,12 @@ class Calculator:
         * Gradient Descent 출력층 일반화
     '''
     # 시그모이드 경사하강법
-    def sigmoid_OutLayer_Gradient_Descent(self,Y_predict,Y_target,pre_Y_predict):
+    def sigmoid_OutLayer_Gradient_Descent(self,Y_predict,Y_target,pre_Y_predict, w2):
         wdiff = (Y_predict - Y_target)*Y_predict*(1-Y_predict)*pre_Y_predict
         bdiff = (Y_predict - Y_target)*Y_predict*(1-Y_predict)
-        delta = (Y_predict - Y_target)*Y_predict*(1-Y_predict)*Y_predict
-        result = [wdiff, delta , bdiff]
+        wdelta = (Y_predict - Y_target)*Y_predict*(1-Y_predict)*w2
+        bdelta = (Y_predict - Y_target)*Y_predict*(1-Y_predict)*w2
+        result = [wdiff, wdelta, bdiff, bdelta]
         return result
 
     # ReLu 경사하강법
@@ -42,9 +43,9 @@ class Calculator:
     '''
         * Gradient Descent 은닉층 일반화
     '''
-    def sigmoid_HiddenLayer_Gradient_Descent(self,Y_predict, pre_delta, pre_Y_predict):
+    def sigmoid_HiddenLayer_Gradient_Descent(self,Y_predict, pre_delta, pre_Y_predict, pre_bdelta):
         wdiff = pre_delta*Y_predict*(1-Y_predict)*pre_Y_predict
-        bdiff = pre_delta*Y_predict*(1-Y_predict)
+        bdiff = pre_bdelta*Y_predict*(1-Y_predict)
         delta = pre_delta*Y_predict*(1-Y_predict)*Y_predict
         result = [wdiff, delta, bdiff]
         return result
