@@ -24,6 +24,8 @@ class Neural:
     b = []
     # 현재 진행률 분자 변수
     __nowWhere = 0
+    # 검증 스위치
+    __testOn = 0
     #Layer 구성 값 : [[노드 개수, 입력 데이터 개수, 활성화 함수]]
     __layerParameter = []
 
@@ -117,7 +119,7 @@ class Neural:
                     # 노드 예측값 임시 저장
                     temp_predict = np.append(temp_predict, self.node(unit,
                                                                      self.__layerParameter[layerCount + 1][2].upper()))
-                if self.__nowWhere == 0:
+                if self.__nowWhere == 0 and self.__testOn == 0:
                     self.layer_predict.append(temp_predict)
                 else:
                     self.layer_predict[layerCount] = temp_predict
@@ -195,7 +197,7 @@ class Neural:
 
     def runNN(self, loss):
         # 학습 횟수
-        for learning in range(10001):
+        for learning in range(20001):
             # 순 전파
             self.forwardPropagation()
             # 오차 역 전파
@@ -203,6 +205,7 @@ class Neural:
             # 손실
             if learning % 100 == 0:
                 if loss.upper() == "CROSSENTROPY":
+                    print("진행도 : {son}%".format(son=round(self.__nowWhere / 20000, 3)*100))
                     print("[손실]")
                     print(calc.crossEntropy(calc, self.layer_predict[1], self.__Y_train[self.__nowWhere - 1]))
                     print("[예측값]")
@@ -212,3 +215,26 @@ class Neural:
                     print("="*60)
             # 데이터 교체
             self.input_Layer = self.__X_train[self.__nowWhere]
+        print("="*60)
+        print("\n\t검증\n")
+        print("=" * 60)
+        self.__nowWhere = 0
+        for learning in range(5):
+            self.__testOn = 1
+            self.input_Layer = self.__X_test[self.__nowWhere]
+            self.__Y_train = self.__Y_test
+            # 순 전파
+            self.forwardPropagation()
+            # 오차 역 전파
+            #self.backPropagation()
+            # 손실
+            if loss.upper() == "CROSSENTROPY":
+                print("[손실]")
+                print(calc.crossEntropy(calc, self.layer_predict[1], self.__Y_train[self.__nowWhere - 1]))
+                print("[예측값]")
+                print(self.layer_predict[1])
+                print("[정답]")
+                print(self.__Y_train[self.__nowWhere - 1])
+                print("=" * 60)
+            self.__nowWhere += 1
+            # 데이터 교체
