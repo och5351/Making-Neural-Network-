@@ -1,6 +1,6 @@
-<h1 align="center">
-   Making deep neural networks in Python
-</h1>
+<p align="center">
+   # Making deep neural networks in Python
+<p>
 
 Enviorment
 ===
