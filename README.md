@@ -24,9 +24,9 @@ Chain Rull
 
     left = Hidden - Output         right = Input - Hidden
 
-<p algin-"center">
-   <img src="https://user-images.githubusercontent.com/45858414/78990611-d13a4800-7b71-11ea-8b89-23837034fa11.PNG" width="33%">
-   <img src="https://user-images.githubusercontent.com/45858414/78990678-08a8f480-7b72-11ea-8882-40aa49d9cf0c.PNG" width="33%">
+<p algin="center">
+   <img src="https://user-images.githubusercontent.com/45858414/78990611-d13a4800-7b71-11ea-8b89-23837034fa11.PNG" width="49%">
+   <img src="https://user-images.githubusercontent.com/45858414/78990678-08a8f480-7b72-11ea-8882-40aa49d9cf0c.PNG" width="49%">
 </p>
 
 Loss
