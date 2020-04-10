@@ -40,3 +40,7 @@ Loss
    <img src="https://user-images.githubusercontent.com/45858414/78989919-e8783600-7b6f-11ea-9015-880a290a44ea.png" width="33%">
    <img src="https://user-images.githubusercontent.com/45858414/78989944-ffb72380-7b6f-11ea-99c6-84515fbc6458.png" width="33%">
 </p>
+
+Reference
+===
+ <ul>https://blog.naver.com/dhcksgo5319/221836819468</ul>
