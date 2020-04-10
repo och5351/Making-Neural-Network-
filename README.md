@@ -1,7 +1,7 @@
-<p align="center">
-   # Making deep neural networks in Python
-<p>
-
+<h1 align="center">
+   Making deep neural networks in Python
+</h1>
+<p align="center">No tensorflow</p>
 Enviorment
 ===
     - Using Python 3.6
