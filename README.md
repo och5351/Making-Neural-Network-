@@ -1,5 +1,5 @@
 <p align="center">
-   <h1>Creating deep neural networks in Python</h1>
+   <p>Making deep neural networks in Python</p>
 </p>
 
 Enviorment
