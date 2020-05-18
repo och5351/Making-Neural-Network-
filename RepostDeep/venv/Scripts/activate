@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\och5351\Desktop\RepostDeep\venv"
+VIRTUAL_ENV="C:\Users\och\Desktop\github\Making_deep_neural_networks_in_Python\RepostDeep\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

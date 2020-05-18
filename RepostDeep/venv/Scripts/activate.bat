@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\och5351\Desktop\RepostDeep\venv
+set VIRTUAL_ENV=C:\Users\och\Desktop\github\Making_deep_neural_networks_in_Python\RepostDeep\venv
 
 if not defined PROMPT set PROMPT=$P$G
 

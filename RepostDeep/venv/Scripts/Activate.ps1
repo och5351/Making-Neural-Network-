@@ -27,7 +27,7 @@ function global:deactivate ([switch]$NonDestructive) {
 
 deactivate -nondestructive
 
-$env:VIRTUAL_ENV="C:\Users\och5351\Desktop\RepostDeep\venv"
+$env:VIRTUAL_ENV="C:\Users\och\Desktop\github\Making_deep_neural_networks_in_Python\RepostDeep\venv"
 
 if (! $env:VIRTUAL_ENV_DISABLE_PROMPT) {
     # Set the prompt to include the env name
