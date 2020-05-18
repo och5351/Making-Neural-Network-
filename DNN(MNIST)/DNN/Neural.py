@@ -1,5 +1,6 @@
 import numpy as np
 from DNN.Calculator import Calculator as calc
+from matplotlib import pyplot as plt
 
 class Neural:
     # 파라메타
@@ -38,12 +39,12 @@ class Neural:
 
     # 데이터 담아두기
     def data_holder(self, inputData, inputY_Class, Xtest, Ytest, epoch, batch, eta):
-        self.__X_train = inputData #학습데이터 저장
+        self.__X_train = inputData # 학습데이터 저장
         self.input_Layer = (self.__X_train[0])  # 첫 입력층
-        self.__Y_train = inputY_Class #학습 정답 데이터 저장
-        self.__X_test = Xtest #검증 데이터 저장
-        self.__Y_test = Ytest #검증 정답 데이터 저장
-        self.__layerParameter.append([len(self.__X_train[0]),len(self.__X_train[0]),0])
+        self.__Y_train = inputY_Class # 학습 정답 데이터 저장
+        self.__X_test = Xtest # 검증 데이터 저장
+        self.__Y_test = Ytest # 검증 정답 데이터 저장
+        self.__layerParameter.append([len(self.__X_train[0]), len(self.__X_train[0]),0])
         self.__epoch = epoch
         self.__batch = batch
         self.__eta = eta
@@ -57,9 +58,9 @@ class Neural:
 
     # 편향 초기화
     def initBias(self, x):
-        tempb = np.zeros(x)
+        tempB = np.zeros(x)
         # 바이어스가 처음 초기화 될 때
-        self.b.append(tempb)
+        self.b.append(tempB)
 
     # 1차원 배열로 이용
     def unit(self, x, w, b):
@@ -196,6 +197,7 @@ class Neural:
 
 
     def runNN(self, loss):
+        lossStack = []
         # 학습 횟수
         for learning in range(20001):
             # 순 전파
@@ -203,6 +205,7 @@ class Neural:
             # 오차 역 전파
             self.backPropagation()
             # 손실
+            lossStack.append(calc.crossEntropy(calc, self.layer_predict[1], self.__Y_train[self.__nowWhere - 1]))
             if learning % 100 == 0:
                 if loss.upper() == "CROSSENTROPY":
                     print("진행도 : {son}%".format(son=round(self.__nowWhere / 20000, 3)*100))
@@ -215,6 +218,14 @@ class Neural:
                     print("="*60)
             # 데이터 교체
             self.input_Layer = self.__X_train[self.__nowWhere]
+
+        # 데이터 시각화
+        plt.plot(range(20001),lossStack)
+        plt.xlabel('learning count')
+        plt.ylabel('loss')
+        plt.title('loss graph')
+        plt.show()
+
         print("="*60)
         print("\n\t검증\n")
         print("=" * 60)
