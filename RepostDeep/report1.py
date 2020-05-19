@@ -2,6 +2,7 @@
 
 import random
 import numpy as np
+import copy
 
 random.seed(777)
 
@@ -16,7 +17,7 @@ data = [
 ]
 
 # 실행 횟수(iterations), 학습률(lr), 모멘텀 계수(mo) 설정
-iterations = 5000
+iterations = 10000
 lr = 0.1
 mo = 0.4
 
@@ -60,21 +61,22 @@ class NeuralNetwork:
         self.num_yh = num_yh  # 리스트로 변경
         self.num_yo = num_yo
         self.bias = bias
-        temp2 = [self.num_x]
+        temp2 = copy.deepcopy([self.num_x])
         temp2.extend(self.num_yh)
         temp2.append(self.num_yo)
         temp2.reverse()
         # 출력층에서 부터 입력층까지의 노드
-        print('-' * 200)
-        print('출력층에서 부터 입력층까지의 노드(Layer Structure)')
+        #print('-' * 200)
+        #print('출력층에서 부터 입력층까지의 노드(Layer Structure)')
         self.LayerStructure = temp2
-        print(self.LayerStructure)
+        #print(self.LayerStructure)
         # 활성화 함수 초깃값
         self.activation_input = [1.0] * self.num_x
         # 은닉층 활성화 함수 초깃값
         self.activation_hidden = []
         for nodeNum in self.num_yh:
             self.activation_hidden.append([1.0] * nodeNum)
+
         self.activation_out = [1.0] * self.num_yo
         # 가중치 초깃값
         self.weight_in = []
@@ -83,7 +85,7 @@ class NeuralNetwork:
             self.weight_in.append(makeMatrix(temp, self.num_yh[layerNumCount]))
             temp = self.num_yh[layerNumCount]
         # 모멘텀 SGD를 위한 이전 가중치 초깃값
-        self.gradient_in = self.weight_in
+        self.gradient_in = copy.deepcopy(self.weight_in)
         # 가중치 초깃값 초기화
         temp = self.num_x
         for i in range(len(self.weight_in)):  # Layer Counter
@@ -92,20 +94,20 @@ class NeuralNetwork:
                     self.weight_in[i][j][k] = random.random()
             if i < len(self.weight_in)-1:
                 temp = len(self.weight_in[i+1])
-        print('-' * 200)
-        print('가중치 초깃값 난수화')
-        print(self.weight_in)
+        #print('-' * 200)
+        #print('가중치 초깃값 난수화')
+        #print(self.weight_in)
         # 가중치 출력 초깃값
         self.weight_out = makeMatrix(self.num_yh[len(num_yh)-1], self.num_yo)
         # 모멘텀 SGD를 위한 이전 출력층 가중치 초깃값
-        self.gradient_out = self.weight_out
-        print(self.gradient_out)
+        self.gradient_out = copy.deepcopy(self.weight_out)
+
         for j in range(self.num_yh[len(num_yh)-1]):
             for k in range(self.num_yo):
                 self.weight_out[j][k] = random.random()
-        print('-' * 200)
-        print('출력층 가중치 난수화')
-        print(self.weight_out)
+        #print('-' * 200)
+        #print('출력층 가중치 난수화')
+        #print(self.weight_out)
 
 
 
@@ -132,9 +134,9 @@ class NeuralNetwork:
                 self.activation_hidden[i][j] = tanh(sum, False)
 
             temp = self.activation_hidden[i]
-        print('-' * 200)
-        print('은닉층 유닛의 값 출력')
-        print(self.activation_hidden)
+        #print('-' * 200)
+        #print('은닉층 유닛의 값 출력')
+        #print(self.activation_hidden)
         # 출력층의 활성화 함수
         for k in range(self.num_yo):  # Output Layer Node Count
             sum = 0.0
@@ -143,9 +145,10 @@ class NeuralNetwork:
 
             # 시그모이드와 tanh 중에서 활성화 함수 선택
             self.activation_out[k] = tanh(sum, False)
-        print('-' * 200)
-        print('출력값')
-        print(self.activation_out[:])
+        #print('-' * 200)
+        #print('출력값')
+        #print(self.activation_out[:])
+
         return self.activation_out[:]
 
     # 역전파의 실행
@@ -158,28 +161,29 @@ class NeuralNetwork:
             # 시그모이드와 tanh 중에서 활성화 함수 선택, 미분 적용
             output_deltas[k] = tanh(self.activation_out[k], True) * error
 
-        print('-' * 200)
-        print('출력층 delta 값')
-        print(output_deltas)
+        #print('-' * 200)
+        #print('출력층 delta 값')
+        #print(output_deltas)
         # 은닉 노드의 오차 함수
         hidden_deltas = []
         for HLNodeCount in self.num_yh:
             hidden_deltas.append([0.0] * HLNodeCount)
             # hidden_deltas = [0.0] * self.num_yh
 
-        print('-' * 200)
-        print('은닉 노드의 구조(Delta Reverse)')
+        #print('-' * 200)
+        #print('은닉 노드의 구조(Delta Reverse)')
         hidden_deltas.reverse()
-        print(hidden_deltas)
-        temp = output_deltas  # First. Output Layer delta
-        temp2 = self.activation_hidden
+        #print(hidden_deltas)
+        temp = output_deltas  # Output Layer delta
+        temp2 = copy.deepcopy(self.activation_hidden)
         temp2.reverse()
-        temp3 = self.weight_in
+        temp3 = copy.deepcopy(self.weight_in)
         temp3.append(self.weight_out)
         temp3.reverse()  # 출력층에서 부터 입력층까지의 가중치
-        print('-' * 200)
-        print('출력층에서 부터 입력층까지의 가중치')
-        print(temp3)
+
+        #print('-' * 200)
+        #print('출력층에서 부터 입력층까지의 가중치')
+        #print(temp3)
 
         for j in range(len(hidden_deltas)):
             error = 0.0
@@ -189,10 +193,11 @@ class NeuralNetwork:
                 # 시그모이드와 tanh 중에서 활성화 함수 선택, 미분 적용
                 hidden_deltas[j][k] = tanh(temp2[j][k], True) * error
             temp = hidden_deltas[j]
-        print('-' * 200)
-        print('은닉층 델타 값 (Reverse)')
-        print(hidden_deltas)
-        print(self.gradient_out)
+
+        #print('-' * 200)
+        #print('은닉층 델타 값 (Reverse)')
+        #print(hidden_deltas)
+
         # 출력 가중치 업데이트
         for j in range(self.num_yh[len(self.num_yh) - 1]):
             for k in range(self.num_yo):
@@ -201,19 +206,29 @@ class NeuralNetwork:
                 self.weight_out[j][k] += v
                 self.gradient_out[j][k] = gradient
 
-        print('-' * 200)
-        print('gradient_out')
-        print(self.gradient_out)
 
+        #print('-' * 200)
+        #print('gradient_out')
+        #print(self.gradient_out)
+        temp3 = temp3[1:]
+        temp4 = copy.deepcopy([self.activation_input])
+        temp4.extend(self.activation_hidden)
+        temp4.reverse()
+        temp4 = temp4[1:]
+        self.weight_in.reverse()
+        #print(self.weight_in)
+        self.gradient_in.reverse()
         # 출력층 제외 가중치 업데이트
-        for i in range(self.num_x):
-            for j in range(self.num_yh):
-                gradient = hidden_deltas[j] * self.activation_input[i]
-                v = mo * self.gradient_in[i][j] - lr * gradient
-                self.weight_in[i][j] += v
-                self.gradient_in[i][j] = gradient
-
-        
+        for i in range(len(temp3)):  # Weight Layer Count
+            for j in range(len(hidden_deltas)):  # Except Output and Input Node
+                for k in range(len(hidden_deltas[j])):
+                    for l in range(len(temp4[j])):
+                        gradient = hidden_deltas[j][k] * temp4[j][l]
+                        v = mo * self.gradient_in[j][l][k] - lr * gradient
+                        self.weight_in[j][l][k] += v
+                        self.gradient_in[j][l][k] = gradient
+        self.weight_in.reverse()
+        self.gradient_in.reverse()
 
         # 오차의 계산(최소 제곱법)
         error = 0.0
@@ -241,10 +256,10 @@ class NeuralNetwork:
 
 if __name__ == '__main__':
     # 두 개의 입력 값, 두 개의 레이어, 하나의 출력 값을 갖도록 설정
-    n = NeuralNetwork(2, [3, 2, 1, 3], 1)
+    n = NeuralNetwork(2, [2,2,1], 1)
 
     # 학습 실행
     n.train(data)
 
     # 결괏값 출력
-    #n.result(data)
+    n.result(data)
